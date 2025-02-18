@@ -26,7 +26,7 @@
 ---
 
 ## 📸 Screenshots  
-![Agent Workflow]() 
+![Agent Workflow](https://github.com/Tanujkumar24/Personal-AI-AGENT-N8N/blob/main/personalassistantworkflow.png) 
 
 ---
 
