@@ -1,0 +1,211 @@
+{
+  "name": "SUMMARIZE-DATABASE",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "f7bb9ed3-9604-4bdd-965c-e7f27f557438",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "16y2LExy-KTNOqZ9B7EqwSVKO34WpMGrRs7HY5pmYOyM",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16y2LExy-KTNOqZ9B7EqwSVKO34WpMGrRs7HY5pmYOyM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16y2LExy-KTNOqZ9B7EqwSVKO34WpMGrRs7HY5pmYOyM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -260,
+        -80
+      ],
+      "id": "b394ed44-a615-4d32-887c-6afb403fb74d",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yXUnpXG2VDNNBnXp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=please summarize each project in the database based on their details:\nProject Name: {{ $json['Project '] }}\nNotes: {{ $json.Notes }}\nStatus: {{ $json.Status }}",
+        "hasOutputParser": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -60,
+        -80
+      ],
+      "id": "7f85c55c-a6db-4c84-94e3-63f3cd591189",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        300,
+        -80
+      ],
+      "id": "5e33230c-b632-4940-a717-54c211662d33",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf68d5be-0474-42ae-91d2-20bd18da8133",
+              "name": "response",
+              "value": "={{ $json.text[2] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        -80
+      ],
+      "id": "1a599c08-d61e-4303-b304-8eb6c06bfc65",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        120
+      ],
+      "id": "ec11ad6b-e689-4aea-9d08-63d63d3e488e",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "JzCwX2SIO7tfaW4Y",
+          "name": "Groq account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "name": "i want the summarized information about the project Ai Tool "
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "365899f6-a1ed-45fc-b74c-8be958342209",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "32b2bcd670e5aa404bc0dd88d2ab53b50f284e206b121388c6ee06c44f2c730d"
+  },
+  "id": "rqvcPdsWbM1J2Gjb",
+  "tags": []
+}

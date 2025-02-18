@@ -1,0 +1,202 @@
+{
+  "name": "SEND-EMAIL-WORKFLOW",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -740,
+        -80
+      ],
+      "id": "6594b091-ef7a-41f1-87ce-8d4251307537",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=parse the query: {{ $json.query }} and output the following parameters separately. \nthe output should be like example:\nsendTo:\nsubject:\nemailType:\nmessage:\nappendAttribution:\nbccList:\nccList:\nsenderName:\nat the end of the \"message\" feild, please signoff the email with something like \"Cheers, Tanuj\" or \"Best regards, Tanuj\".\nnever include something like [Your Name] ",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $json.stringify($json.query) }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -540,
+        -80
+      ],
+      "id": "2a2a0a49-5c0e-4eb2-b8cd-934d535dbdfd",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.output.sendTo }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -180,
+        -80
+      ],
+      "id": "3c26dfa4-af3e-47ce-bf6c-7d54e7ffd029",
+      "name": "Gmail",
+      "webhookId": "565a7ffe-a82d-4c29-a055-68529dbc964b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rxaQPldQVdfmQ8Bb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "463c28c3-faa1-44d5-b140-76bc85e7a7ea",
+              "name": "response",
+              "value": "Sent",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        -80
+      ],
+      "id": "64e843c2-592b-48be-83ea-283913386d31",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        100
+      ],
+      "id": "89e04567-30e6-45f4-800c-6a6c4ad358e1",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "JzCwX2SIO7tfaW4Y",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"sendTo\": \"tanujsunny24@gmail.com\",\n\t\"subject\": \"ask about project status\",\n    \"message\": \" \"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        140
+      ],
+      "id": "86feebd9-a664-498c-8a59-57589530293e",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "send an email to tanujsunny24@gmail.com , asking about the project"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "49681f8e-0ca8-43de-8de7-4d0d11472e1e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "32b2bcd670e5aa404bc0dd88d2ab53b50f284e206b121388c6ee06c44f2c730d"
+  },
+  "id": "Idkdt1rHvQp8n2Tc",
+  "tags": []
+}

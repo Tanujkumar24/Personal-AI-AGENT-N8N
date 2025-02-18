@@ -1,0 +1,563 @@
+{
+  "name": "PERSONAL-ASSISTANT",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2260,
+        -840
+      ],
+      "id": "ca67c373-5831-46d1-9644-80a187dd484f",
+      "name": "Telegram Trigger",
+      "webhookId": "1de3786c-5f92-45c7-99e7-f807a209495b",
+      "credentials": {
+        "telegramApi": {
+          "id": "75vYP1ZbNSlCYSNZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=You are a personal assistant AI Agent designed to handle various tasks efficiently. Your primary role is to read and understand the following query  in detail:\n\n{{ $json.message.text }}\n\nBased on the content of the message, choose the most appropriate tool to complete the request.\n\nAvailable Tools and When to Use Them:\nsend-email – Use this to send emails, set up replies, or forward messages. example:\"send email to \",\"send to mail id \",\"iwant to send mail\"\n\nget-email – Use this to retrieve unread messages, inbox emails, or any other email-related queries.example: \"get me the todays mails\",\"get me the summaries of todays mails\",\"get me the mails of the date\".\n\nset-calendar – Use this to schedule, update, or manage calendar events. example:\"set my calender events to gym today 7am\", \"set todays event to dinner at 9pm\".\n\nget-calendar – Use this to retrieve scheduled events from the calendar. example: \"what are the events scheduled today\", \"get me the events of today\", what are the schedules meetings today\".\n\n\nsummarize-database – Use this to summarize project details from the project database and analyze the google spread sheet in detail , and resond to the particular project details . example: \"what is the status of the ai tool project\",\"get me the updated notes of all the projects\".\n\nupdate-database – Use this to update or append  project details in the project database. if the user said to update a particular column , update only that column value , dont change the while row . example: \"update the ai tool project status to completed \", update the status section , dont disturb other values.\n\nInstructions:\nAccurately interpret the message to determine which tool(s) should be used.\nExtract relevant details from the input and execute the action using the correct tool.\nEnsure precision and organization to provide an efficient response.\nCurrent Date/Time: {{ $now.format('DD-MM-YYYY HH:mm:ss') }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1940,
+        -840
+      ],
+      "id": "828305fa-4591-458b-a01d-3b27119ea53e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1420,
+        -840
+      ],
+      "id": "318c90a2-e706-4fa0-8ac8-743b8872ec01",
+      "name": "Telegram",
+      "webhookId": "d6b0b37b-0512-47c1-9b0d-b5e1b02c3b10",
+      "credentials": {
+        "telegramApi": {
+          "id": "75vYP1ZbNSlCYSNZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Knowledgebase",
+        "description": "Call this tool to get information about the company."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -2160,
+        -640
+      ],
+      "id": "a8d9f106-38d7-40b3-a9d7-b17c1d4564e1",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "tk-ai",
+          "mode": "list",
+          "cachedResultName": "tk-ai"
+        },
+        "options": {
+          "pineconeNamespace": "tk-ai"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        -2340,
+        -500
+      ],
+      "id": "9e8e259b-57d9-4cb6-bf24-218b99b41eb7",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RjSbr7F59YzM0ukw",
+          "name": "PineconeApi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "sangmini/msmarco-cotmae-MiniLM-L12_en-ko-ja",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -2460,
+        -400
+      ],
+      "id": "9ac973ca-d956-4588-b656-fabbe44dda6c",
+      "name": "Embeddings HuggingFace Inference",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "ZXY4BSfJKD3dvWCI",
+          "name": "HuggingFaceApi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -2100,
+        -400
+      ],
+      "id": "409bdf87-1357-4349-a328-4e26765c1468",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "JzCwX2SIO7tfaW4Y",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "get_email",
+        "description": "call this tool if want to \"get emails\" \nfor example: use this tool if your query is similar to  \"extract todays emails\"or \"get todays emails\" ",
+        "workflowId": {
+          "__rl": true,
+          "value": "VUVgTFxtI6omat3J",
+          "mode": "list",
+          "cachedResultName": "TANUJ-AUTOMATION-PROJECTS-RAG-AGENT — GGT-EMAIL-WORKFLOW"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $('Telegram Trigger').item.json.message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1100,
+        -440
+      ],
+      "id": "48e7d443-638e-42aa-85f0-2e9dcbf281a4",
+      "name": "get-email"
+    },
+    {
+      "parameters": {
+        "name": "sendemail",
+        "description": "call this tool , if you get a message  \nexample:\n \"send the email \"",
+        "workflowId": {
+          "__rl": true,
+          "value": "Idkdt1rHvQp8n2Tc",
+          "mode": "list",
+          "cachedResultName": "TANUJ-AUTOMATION-PROJECTS — SEND-EMAIL-WORKFLOW"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $('Telegram Trigger').item.json.message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1220,
+        -440
+      ],
+      "id": "bbf658f6-12ca-4385-8cbf-6ec239a2551c",
+      "name": "send-email"
+    },
+    {
+      "parameters": {
+        "name": "get_calender_event",
+        "description": "call this tool if you want to get calender events.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "OWnrHuOh3Kqw1df5",
+          "mode": "list",
+          "cachedResultName": "TANUJ-AUTOMATION-PROJECTS — GET-CALANDER"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $('Telegram Trigger').item.json.message.text }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        -440
+      ],
+      "id": "2e0e99f7-c458-494f-ae77-0ece79cac152",
+      "name": "get-calender-events"
+    },
+    {
+      "parameters": {
+        "name": "set_calender_events",
+        "description": "call this tool if you want to set or schedule calender events.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "z9mibCx8fuF5Aa45",
+          "mode": "list",
+          "cachedResultName": "TANUJ-AUTOMATION-PROJECTS — SET-CALENDER"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $('Telegram Trigger').item.json.message.text }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        -440
+      ],
+      "id": "ccd101d0-d5c2-4679-b50c-c37315316202",
+      "name": "set-calender-events"
+    },
+    {
+      "parameters": {
+        "name": "summarize_database",
+        "description": "call this tool if you want to summarize the projects in the database.\nexample: if you get the message like , summarize the project from the database",
+        "workflowId": {
+          "__rl": true,
+          "value": "rqvcPdsWbM1J2Gjb",
+          "mode": "list",
+          "cachedResultName": "TANUJ-AUTOMATION-PROJECTS — SUMMARIZE-DATABASE"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1660,
+        -440
+      ],
+      "id": "a0bc09c2-44d5-479c-8d84-f05812f210f8",
+      "name": "summarize-database"
+    },
+    {
+      "parameters": {
+        "name": "update_database",
+        "description": "call this tool if you want to update the database.\nexample: if you get the message like , update the base ,my project status is approved",
+        "workflowId": {
+          "__rl": true,
+          "value": "L62yVPoQegYnN5ZS",
+          "mode": "list",
+          "cachedResultName": "TANUJ-AUTOMATION-PROJECTS — UPDATE-DATABASE"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ $('Telegram Trigger').item.json.message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1820,
+        -420
+      ],
+      "id": "8f724966-2161-40f7-827b-5e29d5ba349d",
+      "name": "update-database"
+    },
+    {
+      "parameters": {
+        "model": "mistral-small-2501",
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -2380,
+        -640
+      ],
+      "id": "abe41707-702f-4f54-8a21-fc22ffc93cbe",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "PRslbdIjPQoYi0w4",
+          "name": "Mistral Cloud account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send-email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-calender-events": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-calender-events": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "summarize-database": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update-database": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f6dbe516-817e-4d93-891d-af430bc9b378",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "32b2bcd670e5aa404bc0dd88d2ab53b50f284e206b121388c6ee06c44f2c730d"
+  },
+  "id": "VCfgHhHEp9IKxjbe",
+  "tags": []
+}
