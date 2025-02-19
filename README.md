@@ -27,7 +27,6 @@
 
 ## 📸 Screenshots  
 ![Agent Workflow](https://github.com/Tanujkumar24/Personal-AI-AGENT-N8N/blob/main/personal-agent.png) 
-![Agent Workflow video](https://www.linkedin.com/feed/update/urn:li:activity:7297641490959208450/)
 
 
 
