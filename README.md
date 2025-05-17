@@ -27,6 +27,7 @@
 
 ## 📸 Screenshots  
 ![Agent Workflow](https://github.com/Tanujkumar24/Personal-AI-AGENT-N8N/blob/main/personal-agent.png) 
+![Detailed Workflow](https://github.com/Tanujkumar24/Personal-AI-AGENT-N8N/blob/main/travel.png)
 
 
 
